@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GradeFlow | Academic Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="logo-mark">G</span>GradeFlow</div>
+    <nav>
+      <a href="#dashboard" class="nav-link" data-page="dashboard">Dashboard</a>
+      <a href="#students" class="nav-link" data-page="students">Students</a>
+      <a href="#courses" class="nav-link" data-page="courses">Courses</a>
+      <a href="#grades" class="nav-link" data-page="grades">Grade Management</a>
+      <a href="#reports" class="nav-link" data-page="reports">Reports</a>
+    </nav>
+    <div class="profile"><span class="avatar">EA</span><div><strong>Administrator</strong><small>System Manager</small></div></div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <input id="globalSearch" type="search" placeholder="Search students…" aria-label="Search students">
+    </header>
+
+    
+    <section id="dashboardPage" class="page">
+      <div class="stats">
+        <div class="card stat"><small>Total students</small><strong id="totalStudents">0</strong></div>
+        <div class="card stat"><small>Active courses</small><strong id="totalCourses">0</strong></div>
+        <div class="card stat"><small>Average grade</small><strong id="averageGrade">—</strong></div>
+        <div class="card stat"><small>Pass rate</small><strong id="passRate">—</strong></div>
+      </div>
+      <div class="two-col">
+        <div class="card"><h3>Average grade by course</h3><div id="courseChart" class="bars"></div></div>
+        <div class="card"><h3>Grade distribution</h3><div id="distribution"></div></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><h3>Recent students</h3><button class="btn ghost" data-go="students">View all</button></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>ID</th><th>Course</th><th>Grade</th><th>Status</th></tr></thead><tbody id="recentBody"></tbody></table></div>
+      </div>
+    </section>
+
+    
+    <section id="studentsPage" class="page">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Students</h3><small id="studentCount"></small></div>
+          <div class="row">
+            <input id="studentSearch" type="search" placeholder="Search by name, ID, course…" aria-label="Filter students">
+            <button class="btn" id="addStudentBtn">+ Add student</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>ID</th><th>Course</th><th>Email</th><th>Grade</th><th>Status</th><th></th></tr></thead><tbody id="studentBody"></tbody></table></div>
+        <p id="emptyState" class="empty hidden">No students found. Add a student or change your search.</p>
+      </div>
+    </section>
+
+    
+    <section id="coursesPage" class="page">
+      <div id="courseCards" class="course-grid"></div>
+    </section>
+
+    
+    <section id="gradesPage" class="page">
+      <div class="card">
+        <div class="card-head">
+          <div><h3>Grade management</h3><small>Record, edit and delete grades. Each student's final grade is the average of their scores.</small></div>
+          <div class="row">
+            <input id="gradeSearch" type="search" placeholder="Search student or assessment…" aria-label="Search grades">
+            <select id="gradeCourse" aria-label="Filter by course"></select>
+            <button class="btn" id="addGradeBtn">+ Add grade</button>
+          </div>
+        </div>
+        <div class="mini-stats" id="gradeSummary"></div>
+        <div class="table-wrap"><table><thead><tr><th>Student</th><th>Assessment</th><th>Type</th><th>Score</th><th>Percent</th><th>Letter</th><th>Date</th><th></th></tr></thead><tbody id="gradeBody"></tbody></table></div>
+        <p id="gradeEmpty" class="empty hidden">No grades recorded yet. Click “Add grade” to record the first one.</p>
+      </div>
+    </section>
+
+    
+    <section id="reportsPage" class="page">
+      <div class="card">
+        <div class="card-head"><div><h3>Course report</h3><small>Summary of every course</small></div>
+          <div class="row"><button class="btn ghost" id="printBtn">Print</button><button class="btn" id="exportBtn">Export CSV</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Course</th><th>Students</th><th>Average</th><th>Highest</th><th>Lowest</th><th>Pass rate</th></tr></thead><tbody id="reportBody"></tbody></table></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+
+<div id="studentModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <form id="studentForm" class="modal-box">
+    <h3 id="modalTitle">Add student</h3>
+    <input type="hidden" id="editingId">
+    <label>Full name<input id="studentName" required></label>
+    <label>Student ID<input id="studentId" required placeholder="STU-005"></label>
+    <label>Course<select id="studentCourse" required></select></label>
+    <label>Email<input id="studentEmail" type="email" required></label>
+    <p id="formError" class="error hidden"></p>
+    <div class="row end"><button type="button" class="btn ghost" id="cancelModal">Cancel</button><button class="btn" id="saveBtn">Save student</button></div>
+  </form>
+</div>
+
+<div id="gradeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="gradeModalTitle">
+  <form id="gradeForm" class="modal-box">
+    <h3 id="gradeModalTitle">Add grade</h3>
+    <input type="hidden" id="editingGradeId">
+    <label>Student<select id="gradeStudent" required></select></label>
+    <label>Assessment name<input id="gradeTitle" required placeholder="e.g. Midterm exam"></label>
+    <label>Type<select id="gradeType"><option>Assignment</option><option>Quiz</option><option>Project</option><option>Midterm</option><option>Final</option></select></label>
+    <div class="row"><label class="grow">Score<input id="gradeScore" type="number" min="0" step="0.5" required></label>
+      <label class="grow">Out of<input id="gradeMax" type="number" min="1" value="100" required></label></div>
+    <label>Date<input id="gradeDate" type="date" required></label>
+    <p id="gradeError" class="error hidden"></p>
+    <div class="row end"><button type="button" class="btn ghost" id="cancelGrade">Cancel</button><button class="btn" id="saveGradeBtn">Save grade</button></div>
+  </form>
+</div>
+<div id="toast" class="toast" role="status"></div>
+<script src="script.js"></script>
+</body>
+</html>
